@@ -7,6 +7,22 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "64kb" }));
 
+// Lightweight abuse controls for the demo server.
+const buckets = new Map<string, { count: number; reset: number }>();
+let activeRequests = 0;
+const MAX_CONCURRENT = 30;
+app.use((req, res, next) => {
+  const key = req.ip || "unknown";
+  const now = Date.now();
+  const b = buckets.get(key);
+  if (!b || b.reset < now) buckets.set(key, { count: 1, reset: now + 60_000 });
+  else {
+    b.count++;
+    if (b.count > 180) return res.status(429).json({ error: "API Race rate limit exceeded" });
+  }
+  next();
+});
+
 const PORT = Number(process.env.PORT || 8787);
 const MAX_RESPONSE_BYTES = 512 * 1024;
 
@@ -37,6 +53,8 @@ async function assertSafeUrl(raw: string) {
 }
 
 app.post("/api/race", async (req, res) => {
+  if (activeRequests >= MAX_CONCURRENT) return res.status(429).json({ error: "Server concurrency limit reached" });
+  activeRequests++;
   const { endpoint, timeout = 8000 } = req.body ?? {};
   const started = performance.now();
 
@@ -108,6 +126,8 @@ app.post("/api/race", async (req, res) => {
       status: response.status,
       responseSize: total,
       success: response.ok,
+      completed: true,
+      kind: response.ok ? "success" : "http_error",
       error: response.ok ? undefined : `HTTP ${response.status}`,
       responsePreview: preview,
       contentType,
@@ -115,13 +135,19 @@ app.post("/api/race", async (req, res) => {
     });
   } catch (error: any) {
     const duration = Math.round((performance.now() - started) * 10) / 10;
+    const message = error?.name === "AbortError" ? "Timeout" : (error?.message || "Request failed");
+    const blocked = /blocked|Private|Only HTTP|Invalid URL|internal network/i.test(message);
     res.json({
       duration,
       status: null,
       responseSize: 0,
       success: false,
-      error: error?.name === "AbortError" ? "Timeout" : (error?.message || "Request failed")
+      completed: false,
+      kind: error?.name === "AbortError" ? "timeout" : blocked ? "blocked" : "network_error",
+      error: message
     });
+  } finally {
+    activeRequests = Math.max(0, activeRequests - 1);
   }
 });
 

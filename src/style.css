@@ -223,3 +223,17 @@ pre { background:#222226;color:#e9e9e9;padding:13px;overflow:auto;max-height:250
   footer { padding:18px;gap:10px;flex-wrap:wrap; }
   footer p { width:100%;order:3; }
 }
+
+.field-error { color:#c51f1a;font-size:10px;font-weight:800;margin:8px 0 0; }
+.secret-warning { color:#7a5200;background:#fff4c2;border-left:3px solid var(--yellow);font-size:9px;font-weight:700;padding:7px;margin:10px 0 0; }
+.demo-btn { border:2px solid var(--ink);background:#dff7ff;padding:9px 12px;font-weight:900;font-size:10px;margin:14px 8px 0 0;box-shadow:2px 2px 0 var(--ink); }
+.race-header-actions { display:flex;align-items:center;gap:9px; }
+.cancel-race { border:2px solid var(--ink);background:#fff;color:var(--red);font-weight:900;font-size:9px;padding:9px 11px;display:flex;align-items:center;gap:5px; }
+.finished-car { left:calc(100% - 100px); animation:finish-pop .3s ease-out; }
+@keyframes finish-pop { from { left:68%; } to { left:calc(100% - 100px); } }
+.global-error,.top-error { background:#ffe4df;border:2px solid var(--red);color:#8e1b17;font-size:11px;font-weight:800;padding:9px 12px; }
+.top-error { max-width:1232px;margin:20px auto 0; }
+.cv { display:block;margin-top:5px!important; }
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important; }
+}

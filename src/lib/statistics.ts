@@ -10,14 +10,16 @@ function percentile(sorted: number[], p: number) {
 
 export function calculateStats(endpointId: string, results: LapResult[]): EndpointStats {
   const all = results.filter((r) => r.endpointId === endpointId);
+  // HTTP 4xx/5xx still completed and therefore have valid latency.
+  const completed = all.filter((r) => r.completed);
   const successful = all.filter((r) => r.success);
-  const times = successful.map((r) => r.duration).sort((a, b) => a - b);
+  const times = completed.map((r) => r.duration).sort((a, b) => a - b);
 
   if (!times.length) {
     return {
       endpointId, average: 0, median: 0, p95: 0, best: 0, worst: 0,
       standardDeviation: 0, coefficientVariation: 0, successRate: 0,
-      consistency: "DNF", averageSize: 0
+      completionRate: 0, consistency: "DNF", averageSize: 0
     };
   }
 
@@ -28,7 +30,7 @@ export function calculateStats(endpointId: string, results: LapResult[]): Endpoi
   const sd = Math.sqrt(variance);
   const cv = average ? (sd / average) * 100 : 0;
   const consistency = cv <= 5 ? "Rock solid" : cv <= 12 ? "Very stable" : cv <= 25 ? "Stable" : cv <= 40 ? "Variable" : "Wild";
-  const averageSize = successful.reduce((s, r) => s + r.responseSize, 0) / successful.length;
+  const averageSize = completed.reduce((s, r) => s + r.responseSize, 0) / completed.length;
 
   return {
     endpointId,
@@ -40,6 +42,7 @@ export function calculateStats(endpointId: string, results: LapResult[]): Endpoi
     standardDeviation: round(sd),
     coefficientVariation: round(cv),
     successRate: round((successful.length / Math.max(1, all.length)) * 100),
+    completionRate: round((completed.length / Math.max(1, all.length)) * 100),
     consistency,
     averageSize: Math.round(averageSize)
   };

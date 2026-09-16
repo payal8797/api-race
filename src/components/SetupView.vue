@@ -31,10 +31,12 @@ const store = useRaceStore();
             :endpoint="endpoint"
             :index="index"
             :can-remove="store.endpoints.length > 2"
+            :error="store.validationErrors[endpoint.id]"
             @remove="store.removeEndpoint"
           />
         </div>
 
+        <button class="demo-btn" @click="store.loadDemo">⚡ Load demo race</button>
         <button class="add-endpoint" :disabled="store.endpoints.length >= 6" @click="store.addEndpoint">
           <Plus :size="18" /> Add another racer
         </button>
@@ -66,7 +68,7 @@ const store = useRaceStore();
             <div><strong>Head-to-head ready</strong><span>Use 2 racers for a direct comparison.</span></div>
           </div>
 
-          <button class="start-race" @click="store.runRace">
+          <button class="start-race" :disabled="store.isBusy" @click="store.runRace">
             <Flag :size="22" fill="currentColor" /> START RACE
           </button>
 

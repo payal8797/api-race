@@ -15,6 +15,8 @@ export interface EndpointConfig {
   color: string;
 }
 
+export type ResultKind = "success" | "http_error" | "timeout" | "network_error" | "blocked" | "cancelled";
+
 export interface LapResult {
   endpointId: string;
   lap: number;
@@ -22,6 +24,8 @@ export interface LapResult {
   status: number | null;
   responseSize: number;
   success: boolean;
+  completed: boolean;
+  kind: ResultKind;
   error?: string;
   responsePreview?: string;
   contentType?: string;
@@ -38,8 +42,9 @@ export interface EndpointStats {
   standardDeviation: number;
   coefficientVariation: number;
   successRate: number;
+  completionRate: number;
   consistency: string;
   averageSize: number;
 }
 
-export type RaceStatus = "idle" | "countdown" | "racing" | "finished";
+export type RaceStatus = "idle" | "countdown" | "racing" | "finished" | "error";

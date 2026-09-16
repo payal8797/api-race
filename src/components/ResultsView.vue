@@ -30,11 +30,12 @@ function diffText() {
         <div class="eyebrow"><Trophy :size="15" /> RACE COMPLETE</div>
         <h1>We have a <span>winner.</span></h1>
         <p>{{ store.laps }} {{ store.laps === 1 ? "lap" : "laps" }} completed across {{ store.endpoints.length }} endpoints.</p>
+        <p v-if="store.globalError" class="global-error">{{ store.globalError }}</p>
       </div>
       <div class="results-actions">
         <button @click="store.replay"><Play :size="17" /> Replay</button>
         <button @click="exportCsv(store.endpoints, store.results)"><Download :size="17" /> CSV</button>
-        <button @click="exportJson(store.endpoints, store.results, store.stats)"><Download :size="17" /> JSON</button>
+        <button @click="exportJson(store.endpoints, store.results, store.stats, store.laps, store.timeout)"><Download :size="17" /> JSON</button>
         <button class="primary" @click="store.reset"><RotateCcw :size="17" /> New race</button>
       </div>
     </div>
@@ -45,7 +46,7 @@ function diffText() {
         <div class="podium-car">🏎️</div>
         <h3>{{ name(r.endpointId) }}</h3>
         <strong>{{ r.average ? `${r.average} ms` : "DNF" }}</strong>
-        <span>{{ r.successRate }}% success</span>
+        <span>{{ r.completionRate }}% completed · {{ r.successRate }}% 2xx</span>
       </div>
     </div>
 
@@ -72,8 +73,8 @@ function diffText() {
               <td>{{ s.p95 || "—" }}<small v-if="s.p95"> ms</small></td>
               <td>{{ s.best || "—" }}<small v-if="s.best"> ms</small></td>
               <td>{{ s.worst || "—" }}<small v-if="s.worst"> ms</small></td>
-              <td><span class="consistency">{{ s.consistency }}</span></td>
-              <td>{{ s.successRate }}%</td>
+              <td><span class="consistency">{{ s.consistency }}</span><small class="cv">{{ s.coefficientVariation }}% variation</small></td>
+              <td>{{ s.successRate }}% <small>2xx</small><br><small>{{ s.completionRate }}% completed</small></td>
               <td>{{ (s.averageSize/1024).toFixed(1) }} KB</td>
             </tr>
           </tbody>

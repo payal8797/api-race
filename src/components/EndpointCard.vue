@@ -3,7 +3,7 @@ import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-vue-next";
 import { ref } from "vue";
 import type { EndpointConfig, HttpMethod } from "../types/race";
 
-defineProps<{ endpoint: EndpointConfig; index: number; canRemove: boolean }>();
+defineProps<{ endpoint: EndpointConfig; index: number; canRemove: boolean; error?: string }>();
 const emit = defineEmits<{ remove: [id: string] }>();
 const expanded = ref(false);
 const methods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
@@ -44,6 +44,8 @@ function addHeader(endpoint: EndpointConfig) {
           <div class="advanced-title body-title">JSON BODY</div>
           <textarea v-model="endpoint.body" rows="4" placeholder='{"hello":"world"}'></textarea>
         </template>
+      <p v-if="error" class="field-error">{{ error }}</p>
+        <p v-if="expanded && endpoint.headers.length" class="secret-warning">🔐 Header values are sent through the API Race server and are never included in exports. Avoid production secrets on public deployments.</p>
       </div>
     </div>
   </article>

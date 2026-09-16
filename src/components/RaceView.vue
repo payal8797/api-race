@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRaceStore } from "../stores/race";
-import { Flag } from "lucide-vue-next";
+import { Flag, X } from "lucide-vue-next";
 
 const store = useRaceStore();
 
@@ -30,7 +30,7 @@ const latest = computed(() => {
           <div class="eyebrow">LIVE BENCHMARK</div>
           <h1>Lap {{ store.currentLap }} <span>/ {{ store.laps }}</span></h1>
         </div>
-        <div class="live-pill"><i></i> RACING</div>
+        <div class="race-header-actions"><button class="cancel-race" @click="store.cancelRace()"><X :size="15"/> CANCEL RACE</button><div class="live-pill"><i></i> RACING</div></div>
       </div>
 
       <div class="track">
@@ -38,15 +38,17 @@ const latest = computed(() => {
           <div class="lane-label"><b>{{ index + 1 }}</b><span>{{ endpoint.name }}</span></div>
           <div class="road">
             <div class="road-lines"></div>
-            <div class="car pending" :style="{ '--car': endpoint.color, '--delay': `${index * 90}ms` }">
+            <div :class="['car', latest.get(endpoint.id) ? 'finished-car' : 'pending']" :style="{ '--car': endpoint.color, '--delay': `${index * 90}ms` }">
               <span class="car-body">🏎️</span>
             </div>
             <div class="finish"><Flag :size="20" /><span>FINISH</span></div>
           </div>
           <div class="lane-time">
             <template v-if="latest.get(endpoint.id)">
-              <strong>{{ latest.get(endpoint.id).success ? `${latest.get(endpoint.id).duration} ms` : "DNF" }}</strong>
-              <small :class="{ error: !latest.get(endpoint.id).success }">{{ latest.get(endpoint.id).status || latest.get(endpoint.id).error }}</small>
+              <strong>{{ latest.get(endpoint.id).completed ? `${latest.get(endpoint.id).duration} ms` : "DNF" }}</strong>
+              <small :class="{ error: !latest.get(endpoint.id).success }">
+                {{ latest.get(endpoint.id).kind === "http_error" ? `HTTP ${latest.get(endpoint.id).status}` : (latest.get(endpoint.id).status || latest.get(endpoint.id).error) }}
+              </small>
             </template>
             <template v-else><strong>•••</strong><small>REQUESTING</small></template>
           </div>

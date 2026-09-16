@@ -19,7 +19,8 @@ const store = useRaceStore();
     </header>
 
     <main>
-      <SetupView v-if="store.status === 'idle'" />
+      <div v-if="store.globalError && store.status === 'idle'" class="top-error">{{ store.globalError }}</div>
+      <SetupView v-if="store.status === 'idle' || store.status === 'error'" />
       <RaceView v-else-if="store.status === 'countdown' || store.status === 'racing'" />
       <ResultsView v-else />
     </main>
