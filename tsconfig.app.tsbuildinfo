@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/lib/export.ts","./src/lib/statistics.ts","./src/stores/race.ts","./src/types/race.ts","./src/app.vue","./src/components/endpointcard.vue","./src/components/latencychart.vue","./src/components/raceview.vue","./src/components/responseinspector.vue","./src/components/resultsview.vue","./src/components/setupview.vue"],"version":"5.8.3"}

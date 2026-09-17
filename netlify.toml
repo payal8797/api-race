@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/race"
+  to = "/.netlify/functions/race"
+  status = 200
+  force = true

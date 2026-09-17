@@ -42,3 +42,9 @@ A bright, race-themed API benchmarking playground built with Vue 3 + TypeScript.
 ```bash
 npm install
 npm run dev
+
+## Netlify deployment
+
+The production backend is implemented as a Netlify Function at `netlify/functions/race.mts`. `netlify.toml` rewrites `/api/race` to that function, so the Vue frontend can use the same relative URL in production.
+
+For normal local development, `npm run dev` continues to run Vite + the local Express server. To test the Netlify deployment model locally, install/use the Netlify CLI and run `npx netlify dev`.
